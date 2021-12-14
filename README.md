@@ -6,8 +6,6 @@
 
 ---
 
-# Escala de Cinza
-
 ---
 
 # Passa-Alta
@@ -23,18 +21,6 @@
 ## Média (Básico)
 
 ## Mediana
-
----
-
-# Roberts
-
----
-
-# Prewitt
-
----
-
-# Sobel
 
 ---
 
