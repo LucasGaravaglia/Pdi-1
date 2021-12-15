@@ -1,9 +1,9 @@
-import matplotlib.pyplot as plt
-from scipy import ndimage
-from skimage.segmentation import watershed
-from skimage.feature import peak_local_max
-import cv2
+from matplotlib import pyplot as plt
+import skimage.color
+import skimage.io
 import numpy as np
+import cv2
+import imutils
 import random
 
 
@@ -53,8 +53,16 @@ def canny(image):
     return cv2.Canny(image=imageBlur, threshold1=100, threshold2=200)
 
 
-def histogram(image):
-    return cv2.calcHist([image], [0], None, [256], [0, 256])
+def hist():
+    image = skimage.io.imread('input8.jpg', as_gray=True)
+    histogram, bin_edges = np.histogram(image, bins=256, range=(0, 1))
+    plt.figure()
+    plt.title("Grayscale Histogram")
+    plt.xlabel("grayscale value")
+    plt.ylabel("pixels")
+    plt.xlim([0.0, 1.0])
+    plt.plot(bin_edges[0:-1], histogram)
+    plt.savefig('book.jpeg')
 
 
 def averaging(image, figure_size=3):
@@ -98,7 +106,7 @@ def zeroCross(image):
     return (minLoG < 0 and log > 0) or (maxLoG > 0 and log < 0)
 
 
-def watershedPrivate(image):
+def watershedWithCount(image):
     gray = cv2.cvtColor(image, cv2.COLOR_BGR2GRAY)
     ret, thresh = cv2.threshold(
         gray, 0, 255, cv2.THRESH_BINARY_INV+cv2.THRESH_OTSU)
@@ -115,6 +123,10 @@ def watershedPrivate(image):
     sure_fg = np.uint8(sure_fg)
     unknown = cv2.subtract(sure_bg, sure_fg)
 
+    cnts = cv2.findContours(sure_fg.copy(), cv2.RETR_EXTERNAL,
+                            cv2.CHAIN_APPROX_SIMPLE)
+    cnts = imutils.grab_contours(cnts)
+
     ret, markers = cv2.connectedComponents(sure_fg)
 
     markers = markers+1
@@ -123,20 +135,27 @@ def watershedPrivate(image):
 
     markers = cv2.watershed(image, markers)
     image[markers == -1] = [255, 0, 0]
-    return image
+    countImage = image
+    for (i, c) in enumerate(cnts):
+        ((x, y), _) = cv2.minEnclosingCircle(c)
+        cv2.putText(countImage, "#{}".format(i + 1), (int(x)-20, int(y)),
+                    cv2.FONT_HERSHEY_SIMPLEX, 0.5, (0, 0, 0), 1)
+    return image, countImage
 
 
-image1 = cv2.imread('input8.jpg')
+def imageRead(path, histogram=False):
+    if histogram:
+        return skimage.io.imread(path, as_gray=histogram)
+    else:
+        return cv2.imread(path)
 
-# teste = watershedPrivate(image1)
+image = imageRead("picture/input10.jpg")
 
-averagingImage = averaging(image1)
-medianImage = median(image1)
-highpassBasicImage = highpassBasic(image1)
-highpassImage = highpass(image1)
+wa,count = watershedWithCount(image)
 while True:
+    cv2.imshow("aaa",count)
     if cv2.waitKey(1) == 27:
         break
 
-image1.realease()
+count.realease()
 cv2.destroyAllWindows()
