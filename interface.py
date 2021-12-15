@@ -1,13 +1,35 @@
 import sys
 from PySide6 import QtCore, QtWidgets, QtGui
+import filters
+import cv2
+from filters.averagingCv import averagingCv
+from filters.cannyCv import cannyCv
+from filters.greyScaleCv import greyScaleCv
+from filters.highpassBasicCv import highpassBasicCv
+from filters.highpassCv import highpassCv
+from filters.histogramCv import histCv
+from filters.imageReadCv import imageReadCv
+from filters.logCv import logCv
+from filters.medianCv import medianCv
+from filters.prewittCv import prewittCv
+from filters.robertsCv import robertsCv
+from filters.saltPepperCv import SaltPepperCv
+from filters.sobelCv import sobelCv
+
+from filters.thresholdingCv import thresholdingCv
+from filters.watershedWithCountCv import watershedWithCountCv
+
+
+
 
 
 class MyWidget(QtWidgets.QWidget):
     def __init__(self):
         super().__init__()
+        self.listImages = []
         self.title = "Trabalho PDI"
         self.initUI()
-        self.pathImage
+        self.pathImage = ""
         
 
     def initUI(self):
@@ -59,11 +81,10 @@ class MyWidget(QtWidgets.QWidget):
         if fileName:
             return fileName
 
-    def setLastImageLabel(self):
-        pixmap = QtGui.QPixmap(self.pathImage)
+    def setLastImageLabel(self,path):
+        pixmap = QtGui.QPixmap(path)
         pixmap = pixmap.scaled(400, 200, QtCore.Qt.KeepAspectRatio)
         self.lastImageLabel.setPixmap(pixmap)
-        pixmap.wi
 
     def setOriginalImageLabel(self):
         pixmap = QtGui.QPixmap(self.pathImage)
@@ -74,89 +95,178 @@ class MyWidget(QtWidgets.QWidget):
     def openDialog(self):
         self.pathImage = self.openFileNameDialog()
         self.setOriginalImageLabel()
+        self.setLastImageLabel(self.pathImage)
+        self.listImages.clear()
+        self.listImages.append(imageReadCv(self.pathImage))
 
     @QtCore.Slot()
     def undoImage(self):
+        if(len(self.listImages) > 1):
+            self.listImages.pop()
+            self.saveLastImage()
         print("undo")
 
     @QtCore.Slot()
     def threshholdButtonEventOnClick(self):
+        var = self.parameters.text()
+        try:
+            image = thresholdingCv(self.listImages[len(self.listImages)-1],int(var))
+        except:
+            image = thresholdingCv(self.listImages[len(self.listImages)-1])
+        self.listImages.append(image)
+        self.saveLastImage()
+        self.parameters.setText("")
+
         print("threshholdButton")
 
 
     @QtCore.Slot()
     def greyScaleButtonEventOnClick(self):
+        image = greyScaleCv(self.listImages[len(self.listImages)-1])
+        self.listImages.append(image)
+        self.saveLastImage()
         print("greyScaleButton")
 
 
     @QtCore.Slot()
     def highPassBasicButtonEventOnClick(self):
+        var = self.parameters.text()
+        try:
+            image = highpassBasicCv(self.listImages[len(self.listImages)-1],int(var))
+        except:
+            image = highpassBasicCv(self.listImages[len(self.listImages)-1])
+        self.listImages.append(image)
+        self.saveLastImage()
+        self.parameters.setText("")
         print("highPassBasicButton")
 
 
     @QtCore.Slot()
     def highPassButtonEventOnClick(self):
+        var = self.parameters.text()
+        try:
+            image = highpassCv(self.listImages[len(self.listImages)-1],int(var))
+        except:
+            image = highpassCv(self.listImages[len(self.listImages)-1])
+        self.listImages.append(image)
+        self.saveLastImage()
+        self.parameters.setText("")
         print("highPassButton")
 
 
     @QtCore.Slot()
     def averagingButtonEventOnClick(self):
+        var = self.parameters.text()
+        try:
+            image = averagingCv(self.listImages[len(self.listImages)-1],int(var))
+        except:
+            image = averagingCv(self.listImages[len(self.listImages)-1])
+        self.listImages.append(image)
+        self.saveLastImage()
+        self.parameters.setText("")
         print("averagingButton")
 
 
     @QtCore.Slot()
     def medianButtonEventOnClick(self):
+        var = self.parameters.text()
+        try:
+            image = medianCv(self.listImages[len(self.listImages)-1],int(var))
+        except:
+            image = medianCv(self.listImages[len(self.listImages)-1])
+        self.listImages.append(image)
+        self.saveLastImage()
+        self.parameters.setText("")
         print("medianButton")
 
 
     @QtCore.Slot()
     def robertsButtonEventOnClick(self):
+        image = robertsCv(self.listImages[len(self.listImages)-1])
+        self.listImages.append(image)
+        self.saveLastImage()
+        self.parameters.setText("")
         print("robertsButton")
 
 
     @QtCore.Slot()
     def prewittButtonEventOnClick(self):
+        image = prewittCv(self.listImages[len(self.listImages)-1])
+        self.listImages.append(image)
+        self.saveLastImage()
+        self.parameters.setText("")
         print("prewittButton")
 
 
     @QtCore.Slot()
     def sobelButtonEventOnClick(self):
+        image = sobelCv(self.listImages[len(self.listImages)-1])
+        self.listImages.append(image)
+        self.saveLastImage()
+        self.parameters.setText("")
         print("sobelButton")
 
 
     @QtCore.Slot()
     def logButtonEventOnClick(self):
+        image = logCv(self.listImages[len(self.listImages)-1])
+        self.listImages.append(image)
+        self.saveLastImage()
+        self.parameters.setText("")
         print("logButton")
 
 
     @QtCore.Slot()
     def cannyButtonEventOnClick(self):
+        image = cannyCv(self.listImages[len(self.listImages)-1])
+        self.listImages.append(image)
+        self.saveLastImage()
+        self.parameters.setText("")
         print("cannyButton")
 
 
     @QtCore.Slot()
     def saltPepperButtonEventOnClick(self):
+        var = self.parameters.text()
+        try:
+            image = SaltPepperCv(self.listImages[len(self.listImages)-1],float(var))
+        except:
+            image = SaltPepperCv(self.listImages[len(self.listImages)-1])
+        self.listImages.append(image)
+        self.saveLastImage()
+        self.parameters.setText("")
         print("saltPepperButton")
 
 
     @QtCore.Slot()
     def watershedButtonEventOnClick(self):
+        image,_ = watershedWithCountCv(self.listImages[len(self.listImages)-1])
+        self.listImages.append(image)
+        self.saveLastImage()
+        self.parameters.setText("")
         print("watershedButton")
 
 
     @QtCore.Slot()
-    def histogramButtonEventOnClick(self):
-        print("histogramButton")
-
-
-    @QtCore.Slot()
     def countObjectsButtonEventOnClick(self):
+        _,image = watershedWithCountCv(self.listImages[len(self.listImages)-1])
+        self.listImages.append(image)
+        self.saveLastImage()
+        self.parameters.setText("")
         print("countObjectsButton")
 
+    @QtCore.Slot()
+    def histogramButtonEventOnClick(self):
+        histCv(imageReadCv(self.pathImage,True))
+        print("histogramButton")
 
     @QtCore.Slot()
     def zerocrossButtonEventOnClick(self):
         print("zerocrossButton")
+
+    def saveLastImage(self):
+        cv2.imwrite("lastImage.jpg",self.listImages[len(self.listImages)-1])
+        self.setLastImageLabel("lastImage.jpg")
 
 
 

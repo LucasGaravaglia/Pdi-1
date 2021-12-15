@@ -1,7 +1,7 @@
 import cv2
 import random
 
-def SaltPepper(image, salt=0.004):
+def SaltPepperCv(image, salt=0.004):
     pepper = 1 - salt
     for i in range(image.shape[0]):
         for j in range(image.shape[1]):
