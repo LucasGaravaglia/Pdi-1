@@ -16,7 +16,7 @@ from filters.roberts import robertsCv
 from filters.saltPepper import SaltPepperCv
 from filters.sobel import sobelCv
 from filters.thresholding import thresholdingCv
-from filters.watershedWithCount import countObjects, watershedWithCountCv
+from filters.watershedWithCount import  watershedWithCountCv
 from filters.zeroCross import laplace_of_gaussian
 
 
@@ -284,7 +284,7 @@ class MyWidget(QtWidgets.QWidget):
     def watershedButtonEventOnClick(self):
         try:
             image = watershedWithCountCv(self.listImages[len(self.listImages)-1])
-            self.listImages.append(image)
+            self.listImages.append(image[0])
             self.saveLastImage()
         except Exception as e:
             print("Erro ao aplicar o filtro watershed."+str(e))
@@ -295,9 +295,8 @@ class MyWidget(QtWidgets.QWidget):
     @QtCore.Slot()
     def countObjectsButtonEventOnClick(self):
         try:
-            countObjects
-            image = countObjects(self.listImages[len(self.listImages)-1])
-            self.listImages.append(image)
+            image = watershedWithCountCv(self.listImages[len(self.listImages)-1])
+            self.listImages.append(image[1])
             self.saveLastImage()
         except:
             print("Erro fazer contagem dos objetos.")
