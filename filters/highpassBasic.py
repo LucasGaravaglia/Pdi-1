@@ -1,4 +1,8 @@
 import cv2
+import numpy as np
 
-def highpassBasicCv(img, sigma=3):
-    return img - cv2.GaussianBlur(img, (3, 3), sigma) + 127
+from filters.averaging import averagingCv
+
+def highpassBasicCv(image, figure_size=3):
+    data = np.array(image, dtype=float)
+    return data - averagingCv(image,figure_size)

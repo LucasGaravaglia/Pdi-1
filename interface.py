@@ -16,8 +16,8 @@ from filters.roberts import robertsCv
 from filters.saltPepper import SaltPepperCv
 from filters.sobel import sobelCv
 from filters.thresholding import thresholdingCv
-from filters.watershedWithCount import watershedWithCountCv
-from filters.zeroCross import zeroCross
+from filters.watershedWithCount import countObjects, watershedWithCountCv
+from filters.zeroCross import laplace_of_gaussian
 
 
 class MyWidget(QtWidgets.QWidget):
@@ -36,7 +36,7 @@ class MyWidget(QtWidgets.QWidget):
         self.greyScaleButton = self.newButton("Escala de cinza",10,80,150,25,self.greyScaleButtonEventOnClick)
         self.highPassBasicButton = self.newButton("Passa alta (básica)",10,115,150,25,self.highPassBasicButtonEventOnClick)
         self.highPassButton = self.newButton("Passa alta (alto reforço)",10,150,150,25,self.highPassButtonEventOnClick)
-        self.averagingButton = self.newButton("Passa alta (média)",10,185,150,25,self.averagingButtonEventOnClick)
+        self.averagingButton = self.newButton("Passa baixa (média)",10,185,150,25,self.averagingButtonEventOnClick)
         self.medianButton = self.newButton("Passa baixa (mediana)",10,220,150,25,self.medianButtonEventOnClick)
         self.robertsButton = self.newButton("Roberts",10,255,150,25,self.robertsButtonEventOnClick)
         self.prewittButton = self.newButton("Prewitt",10,290,150,25,self.prewittButtonEventOnClick)
@@ -54,7 +54,11 @@ class MyWidget(QtWidgets.QWidget):
         self.undo = self.newButton("Desfazer",330,45,150,25,self.undoImage)
 
         self.parameters = QtWidgets.QLineEdit(self)
+        self.parameters.setPlaceholderText("Parametro")
         self.parameters.setGeometry(490,45,150,25)
+        self.matrixScale = QtWidgets.QLineEdit(self)
+        self.matrixScale.setPlaceholderText("Tamanho da matriz")
+        self.matrixScale.setGeometry(650,45,150,25)
 
 
         self.originalImageLabel = QtWidgets.QLabel(self)
@@ -136,6 +140,7 @@ class MyWidget(QtWidgets.QWidget):
         self.listImages.append(image)
         self.saveLastImage()
         self.parameters.setText("")
+        self.matrixScale.setText("")
 
 
     @QtCore.Slot()
@@ -151,7 +156,7 @@ class MyWidget(QtWidgets.QWidget):
 
     @QtCore.Slot()
     def highPassBasicButtonEventOnClick(self):
-        var = self.parameters.text()
+        var = self.matrixScale.text()
         try:
             image = highpassBasicCv(self.listImages[len(self.listImages)-1],int(var))
         except:
@@ -159,23 +164,26 @@ class MyWidget(QtWidgets.QWidget):
         self.listImages.append(image)
         self.saveLastImage()
         self.parameters.setText("")
+        self.matrixScale.setText("")
 
 
     @QtCore.Slot()
     def highPassButtonEventOnClick(self):
-        var = self.parameters.text()
+        varP = self.parameters.text()
+        varM = self.matrixScale.text()
         try:
-            image = highpassCv(self.listImages[len(self.listImages)-1],int(var))
+            image = highpassCv(self.listImages[len(self.listImages)-1],int(varM),int(varP))
         except:
             image = highpassCv(self.listImages[len(self.listImages)-1])
         self.listImages.append(image)
         self.saveLastImage()
         self.parameters.setText("")
+        self.matrixScale.setText("")
 
 
     @QtCore.Slot()
     def averagingButtonEventOnClick(self):
-        var = self.parameters.text()
+        var = self.matrixScale.text()
         try:
             image = averagingCv(self.listImages[len(self.listImages)-1],int(var))
         except:
@@ -183,11 +191,12 @@ class MyWidget(QtWidgets.QWidget):
         self.listImages.append(image)
         self.saveLastImage()
         self.parameters.setText("")
+        self.matrixScale.setText("")
 
 
     @QtCore.Slot()
     def medianButtonEventOnClick(self):
-        var = self.parameters.text()
+        var = self.matrixScale.text()
         try:
             image = medianCv(self.listImages[len(self.listImages)-1],int(var))
         except:
@@ -195,6 +204,7 @@ class MyWidget(QtWidgets.QWidget):
         self.listImages.append(image)
         self.saveLastImage()
         self.parameters.setText("")
+        self.matrixScale.setText("")
 
 
     @QtCore.Slot()
@@ -206,6 +216,7 @@ class MyWidget(QtWidgets.QWidget):
         except:
             print("Erro ao aplicar o filtro Roberts.")
         self.parameters.setText("")
+        self.matrixScale.setText("")
 
 
     @QtCore.Slot()
@@ -217,6 +228,7 @@ class MyWidget(QtWidgets.QWidget):
         except:
             print("Erro ao aplicar o filtro Prewitt.")
         self.parameters.setText("")
+        self.matrixScale.setText("")
 
 
     @QtCore.Slot()
@@ -228,6 +240,7 @@ class MyWidget(QtWidgets.QWidget):
         except:
             print("Erro ao aplicar o filtro Sobel.")
         self.parameters.setText("")
+        self.matrixScale.setText("")
 
 
     @QtCore.Slot()
@@ -239,6 +252,7 @@ class MyWidget(QtWidgets.QWidget):
         except:
             print("Erro ao aplicar o filtro log.")
         self.parameters.setText("")
+        self.matrixScale.setText("")
 
 
     @QtCore.Slot()
@@ -250,6 +264,7 @@ class MyWidget(QtWidgets.QWidget):
             print("Erro ao aplicar o filtro canny.")
         self.saveLastImage()
         self.parameters.setText("")
+        self.matrixScale.setText("")
 
 
     @QtCore.Slot()
@@ -262,33 +277,39 @@ class MyWidget(QtWidgets.QWidget):
         self.listImages.append(image)
         self.saveLastImage()
         self.parameters.setText("")
+        self.matrixScale.setText("")
 
 
     @QtCore.Slot()
     def watershedButtonEventOnClick(self):
         try:
-            image,_ = watershedWithCountCv(self.listImages[len(self.listImages)-1])
+            image = watershedWithCountCv(self.listImages[len(self.listImages)-1])
             self.listImages.append(image)
             self.saveLastImage()
         except Exception as e:
             print("Erro ao aplicar o filtro watershed."+str(e))
         self.parameters.setText("")
+        self.matrixScale.setText("")
 
 
     @QtCore.Slot()
     def countObjectsButtonEventOnClick(self):
         try:
-            image = watershedWithCountCv(self.listImages[len(self.listImages)-1])
-            self.listImages.append(image[1])
+            countObjects
+            image = countObjects(self.listImages[len(self.listImages)-1])
+            self.listImages.append(image)
             self.saveLastImage()
         except:
             print("Erro fazer contagem dos objetos.")
         self.parameters.setText("")
+        self.matrixScale.setText("")
 
     @QtCore.Slot()
     def histogramButtonEventOnClick(self):
         histCv(self.listImages[len(self.listImages)-1])
         self.setLastImageLabel("histogram.jpg")
+        self.parameters.setText("")
+        self.matrixScale.setText("")
 
     @QtCore.Slot()
     def equalizehistogramButtonEventOnClick(self):
@@ -299,16 +320,17 @@ class MyWidget(QtWidgets.QWidget):
         except:
             print("Erro equalizar imagem.")
         self.parameters.setText("")
+        self.matrixScale.setText("")
 
 
     @QtCore.Slot()
     def zerocrossButtonEventOnClick(self):
         try:
-            image = zeroCross(self.listImages[len(self.listImages)-1])
+            image = laplace_of_gaussian(self.listImages[len(self.listImages)-1])
             self.listImages.append(image)
             self.saveLastImage()
-        except:
-            print("Erro equalizar imagem.")
+        except Exception as e:
+            print("Erro ao aplicar zero cross.",str(e))
         self.parameters.setText("")
 
     def saveLastImage(self):

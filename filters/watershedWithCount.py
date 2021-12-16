@@ -18,10 +18,6 @@ def watershedWithCountCv(image):
     sure_fg = np.uint8(sure_fg)
     unknown = cv2.subtract(sure_bg, sure_fg)
 
-    cnts = cv2.findContours(sure_fg.copy(), cv2.RETR_EXTERNAL,
-                            cv2.CHAIN_APPROX_SIMPLE)
-    cnts = imutils.grab_contours(cnts)
-
     ret, markers = cv2.connectedComponents(sure_fg)
 
     markers = markers+1
@@ -30,10 +26,17 @@ def watershedWithCountCv(image):
 
     markers = cv2.watershed(nImage, markers)
     nImage[markers == -1] = [255, 0, 0]
-    countImage = nImage.copy()
+    
+    return nImage
+
+def countObjects(image):
+    cnts = cv2.findContours(image.copy(), cv2.RETR_EXTERNAL,
+                            cv2.CHAIN_APPROX_SIMPLE)
+    cnts = imutils.grab_contours(cnts)
+    countImage = image.copy()
     for (i, c) in enumerate(cnts):
         ((x, y), _) = cv2.minEnclosingCircle(c)
         cv2.putText(countImage, "#{}".format(i + 1), (int(x)-20, int(y)),
-                    cv2.FONT_HERSHEY_SIMPLEX, 0.5, (0, 0, 0), 1)
-    return nImage, countImage
+                    cv2.FONT_HERSHEY_SIMPLEX, 0.5, (125, 0, 125), 1)
+    return countImage
 

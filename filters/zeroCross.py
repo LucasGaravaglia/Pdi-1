@@ -1,37 +1,37 @@
-import cv2
 import numpy as np
-
-
-# def zeroCross(image):
-#     kernel = np.array([[0, 1, 0],
-#                       [1, -4, 1],
-#                       [0, 1, 0]])
-#     return cv2.filter2D(image, cv2.CV_16S, kernel)
-
-
 import cv2
-import numpy as np
-
-DoG_kernel = [
-            [0,   0, -1, -1, -1, 0, 0],
-            [0,  -2, -3, -3, -3,-2, 0],
-            [-1, -3,  5,  5,  5,-3,-1],
-            [-1, -3,  5, 16,  5,-3,-1],
-            [-1, -3,  5,  5,  5,-3,-1],
-            [0,  -2, -3, -3, -3,-2, 0],
-            [0,   0, -1, -1, -1, 0, 0]
-        ]
 
 
-def zeroCross(image):
-    z_c_image = np.zeros(image.shape)
+def laplace_of_gaussian(gray_img, sigma=1., kappa=0.75, pad=False):
+    assert len(gray_img.shape) == 2
+    img = cv2.GaussianBlur(gray_img, (0, 0), sigma) if 0. < sigma else gray_img
+    img = cv2.Laplacian(img, cv2.CV_64F)
+    rows, cols = img.shape[:2]
 
-    for i in range(0,image.shape[0]-1):
-        for j in range(0,image.shape[1]-1):
-            if image[i][j]>0:
-                if image[i+1][j] < 0 or image[i+1][j+1] < 0 or image[i][j+1] < 0:
-                    z_c_image[i,j] = 1
-            elif image[i][j] < 0:
-                if image[i+1][j] > 0 or image[i+1][j+1] > 0 or image[i][j+1] > 0:
-                    z_c_image[i,j] = 1
-    return z_c_image
+    min_map = np.minimum.reduce(list(img[r:rows-2+r, c:cols-2+c]
+                                     for r in range(3) for c in range(3)))
+    max_map = np.maximum.reduce(list(img[r:rows-2+r, c:cols-2+c]
+                                     for r in range(3) for c in range(3)))
+
+    pos_img = 0 < img[1:rows-1, 1:cols-1]
+
+    neg_min = min_map < 0
+    neg_min[1 - pos_img] = 0
+
+    pos_max = 0 < max_map
+    pos_max[pos_img] = 0
+
+    zero_cross = neg_min + pos_max
+
+    value_scale = 255. / max(1., img.max() - img.min())
+    values = value_scale * (max_map - min_map)
+    values[1 - zero_cross] = 0.
+
+    if 0. <= kappa:
+        thresh = float(np.absolute(img).mean()) * kappa
+        values[values < thresh] = 0.
+    log_img = values.astype(np.uint8)
+    if pad:
+        log_img = np.pad(log_img, pad_width=1,
+                         mode='constant', constant_values=0)
+    return log_img
