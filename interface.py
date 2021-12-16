@@ -1,24 +1,23 @@
 import sys
 from PySide6 import QtCore, QtWidgets, QtGui
 import cv2
-from filters.averagingCv import averagingCv
-from filters.cannyCv import cannyCv
-from filters.greyScaleCv import greyScaleCv
-from filters.highpassBasicCv import highpassBasicCv
-from filters.highpassCv import highpassCv
-from filters.histogramCv import histCv
-from filters.imageReadCv import imageReadCv
-from filters.logCv import logCv
-from filters.medianCv import medianCv
-from filters.prewittCv import prewittCv
-from filters.robertsCv import robertsCv
-from filters.saltPepperCv import SaltPepperCv
-from filters.sobelCv import sobelCv
-from filters.thresholdingCv import thresholdingCv
-from filters.watershedWithCountCv import watershedWithCountCv
-
-
-
+from filters.averaging import averagingCv
+from filters.canny import cannyCv
+from filters.eqHist import eqHist
+from filters.grayScale import greyScaleCv
+from filters.highpassBasic import highpassBasicCv
+from filters.highpass import highpassCv
+from filters.histogram import histCv
+from filters.imageRead import imageReadCv
+from filters.log import logCv
+from filters.median import medianCv
+from filters.prewitt import prewittCv
+from filters.roberts import robertsCv
+from filters.saltPepper import SaltPepperCv
+from filters.sobel import sobelCv
+from filters.thresholding import thresholdingCv
+from filters.watershedWithCount import watershedWithCountCv
+from filters.zeroCross import zeroCross
 
 
 class MyWidget(QtWidgets.QWidget):
@@ -49,6 +48,7 @@ class MyWidget(QtWidgets.QWidget):
         self.histogramButton = self.newButton("Histograma",10,500,150,25,self.histogramButtonEventOnClick)
         self.countObjectsButton = self.newButton("Contagem de objetos",10,535,150,25,self.countObjectsButtonEventOnClick)
         self.zerocrossButton = self.newButton("Zerocross",10,570,150,25,self.zerocrossButtonEventOnClick)
+        self.eqHist = self.newButton("Equalizar imagem",10,605,150,25,self.equalizehistogramButtonEventOnClick)
 
         self.dialogButton = self.newButton("Arquivo",170,45,150,25,self.openDialog)
         self.undo = self.newButton("Desfazer",330,45,150,25,self.undoImage)
@@ -82,10 +82,7 @@ class MyWidget(QtWidgets.QWidget):
             1 binary_inv\n \
             2 trunc\n \
             3 tozero\n \
-            4 tozero_inv\n \
-            7 mask\n \
-            8 otsu\n \
-            16 triangle\n")
+            4 tozero_inv\n")
 
 
     def newButton(self,name,x,y,w,h,event):
@@ -220,7 +217,6 @@ class MyWidget(QtWidgets.QWidget):
         except:
             print("Erro ao aplicar o filtro Prewitt.")
         self.parameters.setText("")
-        print("prewittButton")
 
 
     @QtCore.Slot()
@@ -271,11 +267,11 @@ class MyWidget(QtWidgets.QWidget):
     @QtCore.Slot()
     def watershedButtonEventOnClick(self):
         try:
-            image = watershedWithCountCv(self.listImages[len(self.listImages)-1])
-            self.listImages.append(image[0])
+            image,_ = watershedWithCountCv(self.listImages[len(self.listImages)-1])
+            self.listImages.append(image)
             self.saveLastImage()
-        except:
-            print("Erro ao aplicar o filtro watershed.")
+        except Exception as e:
+            print("Erro ao aplicar o filtro watershed."+str(e))
         self.parameters.setText("")
 
 
@@ -291,12 +287,29 @@ class MyWidget(QtWidgets.QWidget):
 
     @QtCore.Slot()
     def histogramButtonEventOnClick(self):
-        histCv(imageReadCv(self.pathImage,True))
+        histCv(self.listImages[len(self.listImages)-1])
         self.setLastImageLabel("histogram.jpg")
 
     @QtCore.Slot()
+    def equalizehistogramButtonEventOnClick(self):
+        try:
+            image = eqHist(self.listImages[len(self.listImages)-1])
+            self.listImages.append(image)
+            self.saveLastImage()
+        except:
+            print("Erro equalizar imagem.")
+        self.parameters.setText("")
+
+
+    @QtCore.Slot()
     def zerocrossButtonEventOnClick(self):
-        print("zerocrossButton")
+        try:
+            image = zeroCross(self.listImages[len(self.listImages)-1])
+            self.listImages.append(image)
+            self.saveLastImage()
+        except:
+            print("Erro equalizar imagem.")
+        self.parameters.setText("")
 
     def saveLastImage(self):
         cv2.imwrite("lastImage.jpg",self.listImages[len(self.listImages)-1])
