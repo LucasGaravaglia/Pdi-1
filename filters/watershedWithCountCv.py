@@ -3,7 +3,8 @@ import numpy as np
 import imutils
 
 def watershedWithCountCv(image):
-    gray = cv2.cvtColor(image, cv2.COLOR_BGR2GRAY)
+    nImage = image.copy()
+    gray = cv2.cvtColor(nImage, cv2.COLOR_BGR2GRAY)
     ret, thresh = cv2.threshold(
         gray, 0, 255, cv2.THRESH_BINARY_INV+cv2.THRESH_OTSU)
 
@@ -29,12 +30,12 @@ def watershedWithCountCv(image):
 
     markers[unknown == 255] = 0
 
-    markers = cv2.watershed(image, markers)
-    image[markers == -1] = [255, 0, 0]
-    countImage = image
+    markers = cv2.watershed(nImage, markers)
+    nImage[markers == -1] = [255, 0, 0]
+    countImage = nImage
     for (i, c) in enumerate(cnts):
         ((x, y), _) = cv2.minEnclosingCircle(c)
         cv2.putText(countImage, "#{}".format(i + 1), (int(x)-20, int(y)),
                     cv2.FONT_HERSHEY_SIMPLEX, 0.5, (0, 0, 0), 1)
-    return image, countImage
+    return nImage, countImage
 

@@ -1,7 +1,8 @@
 import numpy as np
-import skimage.color
 import skimage.io
+import cv2
 from matplotlib import pyplot as plt
+import matplotlib
 
 
 def histCv(image):
