@@ -21,15 +21,24 @@ from filters.zeroCross import laplace_of_gaussian
 
 
 class MyWidget(QtWidgets.QWidget):
+    """
+    Classe responssavel por gerenciar a interface.
+    """   
     def __init__(self):
+        """
+        Construtor da classe.
+        """
         super().__init__()
         self.listImages = []
         self.title = "Trabalho PDI"
         self.initUI()
         self.pathImage = ""
         
-
+    
     def initUI(self):
+        """
+        Inicializa a interface.
+        """
         self.setWindowTitle(self.title)
 
         self.threshholdButton = self.newButton("Limiarização",10,45,150,25,self.threshholdButtonEventOnClick)
@@ -89,15 +98,19 @@ class MyWidget(QtWidgets.QWidget):
             3 tozero\n \
             4 tozero_inv\n")
 
-
     def newButton(self,name,x,y,w,h,event):
+        """
+        Cria um botão e retorna a instancia do mesmo.
+        """
         temp = QtWidgets.QPushButton(name, self)
         temp.clicked.connect(event)
         temp.setGeometry(x,y,w,h)
         return temp
 
-    
     def openFileNameDialog(self):
+        """
+        Cria um dialog para a leitura de arquivo.
+        """
         options = QtWidgets.QFileDialog.Options()
         options |= QtWidgets.QFileDialog.DontUseNativeDialog
         fileName, _ = QtWidgets.QFileDialog.getOpenFileName(self,"QFileDialog.getOpenFileName()", "","All Files (*);;Python Files (*.py)", options=options)
@@ -105,17 +118,26 @@ class MyWidget(QtWidgets.QWidget):
             return fileName
 
     def setLastImageLabel(self,path):
+        """
+        setter do atributo LastImageLabel
+        """
         pixmap = QtGui.QPixmap(path)
         pixmap = pixmap.scaled(600, 400, QtCore.Qt.KeepAspectRatio)
         self.lastImageLabel.setPixmap(pixmap)
 
     def setOriginalImageLabel(self):
+        """
+        setter do atributo OriginalImageLabel
+        """
         pixmap = QtGui.QPixmap(self.pathImage)
         pixmap = pixmap.scaled(400, 200, QtCore.Qt.KeepAspectRatio)
         self.originalImageLabel.setPixmap(pixmap)
 
     @QtCore.Slot()
     def openDialog(self):
+        """
+        Evento do botão que inicia o dialog
+        """
         self.pathImage = self.openFileNameDialog()
         self.setOriginalImageLabel()
         self.setLastImageLabel(self.pathImage)
@@ -124,6 +146,9 @@ class MyWidget(QtWidgets.QWidget):
 
     @QtCore.Slot()
     def undoImage(self):
+        """
+        Evento do botão q retrocede a imagem
+        """
         if(len(self.listImages) > 1):
             try:
                 self.listImages.pop()
@@ -133,6 +158,9 @@ class MyWidget(QtWidgets.QWidget):
 
     @QtCore.Slot()
     def threshholdButtonEventOnClick(self):
+        """
+        Evento do botão que aplica o filtro Threshhold.
+        """
         varT = self.parameters.text()
         varV = self.parameters2.text()
         try:
@@ -144,9 +172,11 @@ class MyWidget(QtWidgets.QWidget):
         self.parameters.setText("")
         self.parameters2.setText("")
 
-
     @QtCore.Slot()
     def greyScaleButtonEventOnClick(self):
+        """
+        Evento do botão que aplica o filtro escala de cinza.
+        """
         try:
             image = greyScaleCv(imageReadCv("lastImage.jpg"))
             self.listImages.append(image)
@@ -154,10 +184,12 @@ class MyWidget(QtWidgets.QWidget):
         except:
             print("Erro ao converter imagem para escala de cinza.")
         self.parameters.setText("")
-        
 
     @QtCore.Slot()
     def highPassBasicButtonEventOnClick(self):
+        """
+        Evento do botão que aplica o filtro passa alta basica.
+        """
         var = self.parameters2.text()
         try:
             image = highpassBasicCv(imageReadCv("lastImage.jpg"),int(var))
@@ -168,9 +200,11 @@ class MyWidget(QtWidgets.QWidget):
         self.parameters.setText("")
         self.parameters2.setText("")
 
-
     @QtCore.Slot()
     def highPassButtonEventOnClick(self):
+        """
+        Evento do botão que aplica o filtro passa alta de alto contraste.
+        """
         varM = self.parameters.text()
         varP = self.parameters2.text()
         try:
@@ -182,9 +216,11 @@ class MyWidget(QtWidgets.QWidget):
         self.parameters.setText("")
         self.parameters2.setText("")
 
-
     @QtCore.Slot()
     def averagingButtonEventOnClick(self):
+        """
+        Evento do botão que aplica o filtro de média.
+        """
         var = self.parameters.text()
         try:
             image = averagingCv(imageReadCv("lastImage.jpg"),int(var))
@@ -195,9 +231,11 @@ class MyWidget(QtWidgets.QWidget):
         self.parameters.setText("")
         self.parameters2.setText("")
 
-
     @QtCore.Slot()
     def medianButtonEventOnClick(self):
+        """
+        Evento do botão que aplica o filtro de mediana.
+        """
         var = self.parameters.text()
         try:
             image = medianCv(imageReadCv("lastImage.jpg"),int(var))
@@ -208,9 +246,11 @@ class MyWidget(QtWidgets.QWidget):
         self.parameters.setText("")
         self.parameters2.setText("")
 
-
     @QtCore.Slot()
     def robertsButtonEventOnClick(self):
+        """
+        Evento do botão que aplica o filtro roberts.
+        """
         try:
             image = robertsCv(imageReadCv("lastImage.jpg"))
             self.listImages.append(image)
@@ -220,9 +260,11 @@ class MyWidget(QtWidgets.QWidget):
         self.parameters.setText("")
         self.parameters2.setText("")
 
-
     @QtCore.Slot()
     def prewittButtonEventOnClick(self):
+        """
+        Evento do botão que aplica o filtro prewitt.
+        """
         try:
             image = prewittCv(imageReadCv("lastImage.jpg"))
             self.listImages.append(image)
@@ -232,9 +274,11 @@ class MyWidget(QtWidgets.QWidget):
         self.parameters.setText("")
         self.parameters2.setText("")
 
-
     @QtCore.Slot()
     def sobelButtonEventOnClick(self):
+        """
+        Evento do botão que aplica o filtro sobel.
+        """
         try:
             image = sobelCv(imageReadCv("lastImage.jpg"))
             self.listImages.append(image[0])
@@ -244,9 +288,11 @@ class MyWidget(QtWidgets.QWidget):
         self.parameters.setText("")
         self.parameters2.setText("")
 
-
     @QtCore.Slot()
     def logButtonEventOnClick(self):
+        """
+        Evento do botão que aplica o filtro de log.
+        """
         try:
             image = logCv(imageReadCv("lastImage.jpg"))
             self.listImages.append(image)
@@ -256,9 +302,11 @@ class MyWidget(QtWidgets.QWidget):
         self.parameters.setText("")
         self.parameters2.setText("")
 
-
     @QtCore.Slot()
     def cannyButtonEventOnClick(self):
+        """
+        Evento do botão que aplica o filtro canny.
+        """
         try:
             image = cannyCv(imageReadCv("lastImage.jpg"))
             self.listImages.append(image)
@@ -268,9 +316,11 @@ class MyWidget(QtWidgets.QWidget):
         self.parameters.setText("")
         self.parameters2.setText("")
 
-
     @QtCore.Slot()
     def saltPepperButtonEventOnClick(self):
+        """
+        Evento do botão que aplica o ruido salt & pepper.
+        """
         var = self.parameters.text()
         try:
             image = SaltPepperCv(imageReadCv("lastImage.jpg"),float(var))
@@ -281,9 +331,11 @@ class MyWidget(QtWidgets.QWidget):
         self.parameters.setText("")
         self.parameters2.setText("")
 
-
     @QtCore.Slot()
     def watershedButtonEventOnClick(self):
+        """
+        Evento do botão que aplica o filtro watershed.
+        """
         try:
             image = watershedWithCountCv(imageReadCv("lastImage.jpg"))
             self.listImages.append(image[0])
@@ -293,9 +345,11 @@ class MyWidget(QtWidgets.QWidget):
         self.parameters.setText("")
         self.parameters2.setText("")
 
-
     @QtCore.Slot()
     def countObjectsButtonEventOnClick(self):
+        """
+        Evento do botão que faz a contagem de objetos.
+        """
         try:
             image = watershedWithCountCv(imageReadCv("lastImage.jpg"))
             self.listImages.append(image[1])
@@ -307,6 +361,9 @@ class MyWidget(QtWidgets.QWidget):
 
     @QtCore.Slot()
     def histogramButtonEventOnClick(self):
+        """
+        Evento do botão que gera o histograma.
+        """
         histCv(imageReadCv("lastImage.jpg"))
         self.setLastImageLabel("histogram.jpg")
         self.parameters.setText("")
@@ -314,6 +371,9 @@ class MyWidget(QtWidgets.QWidget):
 
     @QtCore.Slot()
     def equalizehistogramButtonEventOnClick(self):
+        """
+        Evento do botão que aplica a equalização no histograma.
+        """
         try:
             image = eqHist(imageReadCv("lastImage.jpg"))
             self.listImages.append(image)
@@ -323,9 +383,11 @@ class MyWidget(QtWidgets.QWidget):
         self.parameters.setText("")
         self.parameters2.setText("")
 
-
     @QtCore.Slot()
     def zerocrossButtonEventOnClick(self):
+        """
+        Evento do botão que aplica o filtro zerocross.
+        """
         varS = self.parameters.text()
         varK = self.parameters2.text()
         try:
@@ -339,6 +401,9 @@ class MyWidget(QtWidgets.QWidget):
         self.parameters2.setText("")
 
     def saveLastImage(self):
+        """
+        Método que salva a ultima versão da imagem.
+        """
         cv2.imwrite("lastImage.jpg",self.listImages[len(self.listImages)-1])
         self.setLastImageLabel("lastImage.jpg")
 
@@ -349,5 +414,4 @@ if __name__ == "__main__":
     widget = MyWidget()
     widget.resize(1200, 800)
     widget.show()
-
     sys.exit(app.exec())
