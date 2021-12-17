@@ -1,5 +1,5 @@
 import cv2
 
 
-def thresholdingCv(image, thresh=0):
-    return cv2.threshold(image, 120, 255, thresh)[1]
+def thresholdingCv(image, trash=200,type=0):
+    return cv2.threshold(image, trash, 255, type)[1]

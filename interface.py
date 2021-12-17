@@ -54,11 +54,11 @@ class MyWidget(QtWidgets.QWidget):
         self.undo = self.newButton("Desfazer",330,45,150,25,self.undoImage)
 
         self.parameters = QtWidgets.QLineEdit(self)
-        self.parameters.setPlaceholderText("Parametro")
+        self.parameters.setPlaceholderText("Parametro 1")
         self.parameters.setGeometry(490,45,150,25)
-        self.matrixScale = QtWidgets.QLineEdit(self)
-        self.matrixScale.setPlaceholderText("Tamanho da matriz")
-        self.matrixScale.setGeometry(650,45,150,25)
+        self.parameters2 = QtWidgets.QLineEdit(self)
+        self.parameters2.setPlaceholderText("Parametro2")
+        self.parameters2.setGeometry(650,45,150,25)
 
 
         self.originalImageLabel = QtWidgets.QLabel(self)
@@ -76,12 +76,13 @@ class MyWidget(QtWidgets.QWidget):
         self.instructions = QtWidgets.QLabel(self)
         self.instructions.setGeometry(780,45,400,270)
         self.instructions.setText("\n \
-        Passa alta de alto contraste recebe um valor de 3 a 12.\n \
-        Passa alta básica recebe um valor de 3 a 12.\n \
-        Mediana recebe um valor de 3 a 12.\n \
-        Média recebe um valor de 3 a 12.\n \
-        Salt & Pepper recebe um valor de 0.00 a 1.00\n \
-        Limiarização recebe os seguintes valores:\n \
+        Passa alta de alto contraste: Parametro1 1 a 12, Parametro2 1 a 20.\n \
+        Passa alta básica : Parametro1 1 a 12.\n \
+        Mediana: Parametro1 1 a 12.\n \
+        Média: Parametro1 1 a 12.\n \
+        Salt & Pepper: Parametro1 0.00 a 1.00\n \
+        ZeroCross: Parametro1 1 a 15 e Parametro2 0.00 a 1.00\n \
+        Limiarização: Parametro1 0 a 255 e Parametro 2:\n \
             0 binary\n \
             1 binary_inv\n \
             2 trunc\n \
@@ -132,21 +133,22 @@ class MyWidget(QtWidgets.QWidget):
 
     @QtCore.Slot()
     def threshholdButtonEventOnClick(self):
-        var = self.parameters.text()
+        varT = self.parameters.text()
+        varV = self.parameters2.text()
         try:
-            image = thresholdingCv(self.listImages[len(self.listImages)-1],int(var))
+            image = thresholdingCv(imageReadCv("lastImage.jpg"),int(varT),int(varV))
         except:
-            image = thresholdingCv(self.listImages[len(self.listImages)-1])
+            image = thresholdingCv(imageReadCv("lastImage.jpg"))
         self.listImages.append(image)
         self.saveLastImage()
         self.parameters.setText("")
-        self.matrixScale.setText("")
+        self.parameters2.setText("")
 
 
     @QtCore.Slot()
     def greyScaleButtonEventOnClick(self):
         try:
-            image = greyScaleCv(self.listImages[len(self.listImages)-1])
+            image = greyScaleCv(imageReadCv("lastImage.jpg"))
             self.listImages.append(image)
             self.saveLastImage()
         except:
@@ -156,181 +158,185 @@ class MyWidget(QtWidgets.QWidget):
 
     @QtCore.Slot()
     def highPassBasicButtonEventOnClick(self):
-        var = self.matrixScale.text()
+        var = self.parameters2.text()
         try:
-            image = highpassBasicCv(self.listImages[len(self.listImages)-1],int(var))
+            image = highpassBasicCv(imageReadCv("lastImage.jpg"),int(var))
         except:
-            image = highpassBasicCv(self.listImages[len(self.listImages)-1])
+            image = highpassBasicCv(imageReadCv("lastImage.jpg"))
         self.listImages.append(image)
         self.saveLastImage()
         self.parameters.setText("")
-        self.matrixScale.setText("")
+        self.parameters2.setText("")
 
 
     @QtCore.Slot()
     def highPassButtonEventOnClick(self):
-        varP = self.parameters.text()
-        varM = self.matrixScale.text()
+        varM = self.parameters.text()
+        varP = self.parameters2.text()
         try:
-            image = highpassCv(self.listImages[len(self.listImages)-1],int(varM),int(varP))
+            image = highpassCv(imageReadCv("lastImage.jpg"),int(varM),int(varP))
         except:
-            image = highpassCv(self.listImages[len(self.listImages)-1])
+            image = highpassCv(imageReadCv("lastImage.jpg"))
         self.listImages.append(image)
         self.saveLastImage()
         self.parameters.setText("")
-        self.matrixScale.setText("")
+        self.parameters2.setText("")
 
 
     @QtCore.Slot()
     def averagingButtonEventOnClick(self):
-        var = self.matrixScale.text()
+        var = self.parameters.text()
         try:
-            image = averagingCv(self.listImages[len(self.listImages)-1],int(var))
+            image = averagingCv(imageReadCv("lastImage.jpg"),int(var))
         except:
-            image = averagingCv(self.listImages[len(self.listImages)-1])
+            image = averagingCv(imageReadCv("lastImage.jpg"))
         self.listImages.append(image)
         self.saveLastImage()
         self.parameters.setText("")
-        self.matrixScale.setText("")
+        self.parameters2.setText("")
 
 
     @QtCore.Slot()
     def medianButtonEventOnClick(self):
-        var = self.matrixScale.text()
+        var = self.parameters.text()
         try:
-            image = medianCv(self.listImages[len(self.listImages)-1],int(var))
+            image = medianCv(imageReadCv("lastImage.jpg"),int(var))
         except:
-            image = medianCv(self.listImages[len(self.listImages)-1])
+            image = medianCv(imageReadCv("lastImage.jpg"))
         self.listImages.append(image)
         self.saveLastImage()
         self.parameters.setText("")
-        self.matrixScale.setText("")
+        self.parameters2.setText("")
 
 
     @QtCore.Slot()
     def robertsButtonEventOnClick(self):
         try:
-            image = robertsCv(self.listImages[len(self.listImages)-1])
+            image = robertsCv(imageReadCv("lastImage.jpg"))
             self.listImages.append(image)
             self.saveLastImage()
         except:
             print("Erro ao aplicar o filtro Roberts.")
         self.parameters.setText("")
-        self.matrixScale.setText("")
+        self.parameters2.setText("")
 
 
     @QtCore.Slot()
     def prewittButtonEventOnClick(self):
         try:
-            image = prewittCv(self.listImages[len(self.listImages)-1])
+            image = prewittCv(imageReadCv("lastImage.jpg"))
             self.listImages.append(image)
             self.saveLastImage()
         except:
             print("Erro ao aplicar o filtro Prewitt.")
         self.parameters.setText("")
-        self.matrixScale.setText("")
+        self.parameters2.setText("")
 
 
     @QtCore.Slot()
     def sobelButtonEventOnClick(self):
         try:
-            image = sobelCv(self.listImages[len(self.listImages)-1])
+            image = sobelCv(imageReadCv("lastImage.jpg"))
             self.listImages.append(image[0])
             self.saveLastImage()
         except:
             print("Erro ao aplicar o filtro Sobel.")
         self.parameters.setText("")
-        self.matrixScale.setText("")
+        self.parameters2.setText("")
 
 
     @QtCore.Slot()
     def logButtonEventOnClick(self):
         try:
-            image = logCv(self.listImages[len(self.listImages)-1])
+            image = logCv(imageReadCv("lastImage.jpg"))
             self.listImages.append(image)
             self.saveLastImage()
         except:
             print("Erro ao aplicar o filtro log.")
         self.parameters.setText("")
-        self.matrixScale.setText("")
+        self.parameters2.setText("")
 
 
     @QtCore.Slot()
     def cannyButtonEventOnClick(self):
         try:
-            image = cannyCv(self.listImages[len(self.listImages)-1])
+            image = cannyCv(imageReadCv("lastImage.jpg"))
             self.listImages.append(image)
         except:
             print("Erro ao aplicar o filtro canny.")
         self.saveLastImage()
         self.parameters.setText("")
-        self.matrixScale.setText("")
+        self.parameters2.setText("")
 
 
     @QtCore.Slot()
     def saltPepperButtonEventOnClick(self):
         var = self.parameters.text()
         try:
-            image = SaltPepperCv(self.listImages[len(self.listImages)-1],float(var))
+            image = SaltPepperCv(imageReadCv("lastImage.jpg"),float(var))
         except:
-            image = SaltPepperCv(self.listImages[len(self.listImages)-1])
+            image = SaltPepperCv(imageReadCv("lastImage.jpg"))
         self.listImages.append(image)
         self.saveLastImage()
         self.parameters.setText("")
-        self.matrixScale.setText("")
+        self.parameters2.setText("")
 
 
     @QtCore.Slot()
     def watershedButtonEventOnClick(self):
         try:
-            image = watershedWithCountCv(self.listImages[len(self.listImages)-1])
+            image = watershedWithCountCv(imageReadCv("lastImage.jpg"))
             self.listImages.append(image[0])
             self.saveLastImage()
         except Exception as e:
             print("Erro ao aplicar o filtro watershed."+str(e))
         self.parameters.setText("")
-        self.matrixScale.setText("")
+        self.parameters2.setText("")
 
 
     @QtCore.Slot()
     def countObjectsButtonEventOnClick(self):
         try:
-            image = watershedWithCountCv(self.listImages[len(self.listImages)-1])
+            image = watershedWithCountCv(imageReadCv("lastImage.jpg"))
             self.listImages.append(image[1])
             self.saveLastImage()
         except:
             print("Erro fazer contagem dos objetos.")
         self.parameters.setText("")
-        self.matrixScale.setText("")
+        self.parameters2.setText("")
 
     @QtCore.Slot()
     def histogramButtonEventOnClick(self):
-        histCv(self.listImages[len(self.listImages)-1])
+        histCv(imageReadCv("lastImage.jpg"))
         self.setLastImageLabel("histogram.jpg")
         self.parameters.setText("")
-        self.matrixScale.setText("")
+        self.parameters2.setText("")
 
     @QtCore.Slot()
     def equalizehistogramButtonEventOnClick(self):
         try:
-            image = eqHist(self.listImages[len(self.listImages)-1])
+            image = eqHist(imageReadCv("lastImage.jpg"))
             self.listImages.append(image)
             self.saveLastImage()
         except:
             print("Erro equalizar imagem.")
         self.parameters.setText("")
-        self.matrixScale.setText("")
+        self.parameters2.setText("")
 
 
     @QtCore.Slot()
     def zerocrossButtonEventOnClick(self):
+        varS = self.parameters.text()
+        varK = self.parameters2.text()
         try:
-            image = laplace_of_gaussian(self.listImages[len(self.listImages)-1])
+            image = laplace_of_gaussian(imageReadCv("lastImage.jpg"),sigma=float(varS),kappa=float(varK))
             self.listImages.append(image)
             self.saveLastImage()
         except Exception as e:
+            image = laplace_of_gaussian(imageReadCv("lastImage.jpg"))
             print("Erro ao aplicar zero cross.",str(e))
         self.parameters.setText("")
+        self.parameters2.setText("")
 
     def saveLastImage(self):
         cv2.imwrite("lastImage.jpg",self.listImages[len(self.listImages)-1])
