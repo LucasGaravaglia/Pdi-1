@@ -1,10 +1,10 @@
 import cv2
 import random
 
+
 def SaltPepperCv(image, salt=0.004):
     """
     Aplica ruido de salt & pepper na imagem.
-
     Parameters:
     image -> imagem que recebera o filtro.
     salt -> parametro de peso do ruido.
@@ -21,4 +21,3 @@ def SaltPepperCv(image, salt=0.004):
             else:
                 pass
     return nImage
-

@@ -1,9 +1,9 @@
 import cv2
 
+
 def greyScaleCv(image):
     """
     Aplica a escala de cinza na imagem.
-
     Parameters:
     image -> imagem que recebera o filtro.
     """

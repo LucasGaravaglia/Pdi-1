@@ -2,10 +2,10 @@ import cv2
 import numpy as np
 import imutils
 
+
 def watershedWithCountCv(image):
     """
     Aplica o filtro de watershed na imagem e faz a contagem de objetos.
-
     Parameters:
     image -> imagem que recebera o filtro.
     """
@@ -44,4 +44,3 @@ def watershedWithCountCv(image):
         cv2.putText(countImage, "#{}".format(i + 1), (int(x)-20, int(y)),
                     cv2.FONT_HERSHEY_SIMPLEX, 0.5, (255, 0, 0), 1)
     return nImage, countImage
-

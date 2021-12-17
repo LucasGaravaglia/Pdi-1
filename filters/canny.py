@@ -1,9 +1,9 @@
 import cv2
 
+
 def cannyCv(image):
     """
     Aplica o filtro de canny na imagem.
-
     Parameters:
     image -> imagem que recebera o filtro.
     """

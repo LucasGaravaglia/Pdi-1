@@ -1,10 +1,10 @@
 import cv2
 import numpy as np
 
+
 def robertsCv(image):
     """
     Aplica o filtro de robers na imagem.
-
     Parameters:
     image -> imagem que recebera o filtro.
     """

@@ -2,18 +2,15 @@ import numpy as np
 import cv2
 
 
-
 def laplace_of_gaussian(image, sigma=1., kappa=0.75, pad=False):
     """
     Aplica o filtro de zero Cross na imagem.
-
     Parameters:
     image -> imagem que recebera o filtro.
     sigma -> parametro de peso para o filtro.
     kappa -> parametro de condição para o filtro.
     pad -> Aplica um pad ou não na imagem.
     """
-    assert len(image.shape) == 2
     img = cv2.GaussianBlur(image, (0, 0), sigma) if 0. < sigma else image
     img = cv2.Laplacian(img, cv2.CV_64F)
     rows, cols = img.shape[:2]
