@@ -3,6 +3,12 @@ import numpy as np
 import imutils
 
 def watershedWithCountCv(image):
+    """
+    Aplica o filtro de watershed na imagem e faz a contagem de objetos.
+
+    Parameters:
+    image -> imagem que recebera o filtro.
+    """
     nImage = image.copy()
     gray = cv2.cvtColor(nImage, cv2.COLOR_BGR2GRAY)
     ret, thresh = cv2.threshold(

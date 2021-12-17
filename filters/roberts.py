@@ -2,6 +2,12 @@ import cv2
 import numpy as np
 
 def robertsCv(image):
+    """
+    Aplica o filtro de robers na imagem.
+
+    Parameters:
+    image -> imagem que recebera o filtro.
+    """
     kernelX = np.array([[-1, 0], [0, 1]], dtype=int)
     kernelY = np.array([[0, -1], [1, 0]], dtype=int)
 
