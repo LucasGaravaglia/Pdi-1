@@ -18,6 +18,7 @@ from filters.sobel import sobelCv
 from filters.thresholding import thresholdingCv
 from filters.watershedWithCount import watershedWithCountCv
 from filters.zeroCross import laplace_of_gaussian
+from numpy import double
 
 
 class MyWidget(QtWidgets.QWidget):
@@ -58,7 +59,7 @@ class MyWidget(QtWidgets.QWidget):
         self.prewittButton = self.newButton(
             "Prewitt", 10, 290, 150, 25, self.prewittButtonEventOnClick)
         self.sobelButton = self.newButton(
-            "Sobel", 10, 325, 150, 25, self.sobelButtonEventOnClick)
+            "Sobel (ver+hor)", 10, 325, 150, 25, self.sobelButtonEventOnClick)
         self.logButton = self.newButton(
             "Log", 10, 360, 150, 25, self.logButtonEventOnClick)
         self.cannyButton = self.newButton(
@@ -223,10 +224,10 @@ class MyWidget(QtWidgets.QWidget):
         Evento do botão que aplica o filtro passa alta de alto contraste.
         """
         varM = self.showDialogInt("Tamanho da matriz", "valor de 1 a 12:", 3)
-        varP = self.showDialogInt("Valor de sigma", "valor < 1:", 1)
+        varP = self.showDialogDouble("Valor de sigma", "valor < 1:", 1.0)
         try:
             image = highpassCv(imageReadCv("lastImage.jpg"),
-                               int(varM), int(varP))
+                               int(varM), float(varP))
             self.listImages.append(image)
             self.saveLastImage()
         except:

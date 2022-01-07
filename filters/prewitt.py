@@ -12,4 +12,6 @@ def prewittCv(image):
     kernely = np.array([[-1, 0, 1], [-1, 0, 1], [-1, 0, 1]])
     img_prewittx = cv2.filter2D(image, -1, kernelx)
     img_prewitty = cv2.filter2D(image, -1, kernely)
-    return img_prewittx+img_prewitty
+    absX = cv2.convertScaleAbs(img_prewittx)
+    absY = cv2.convertScaleAbs(img_prewitty)
+    return cv2.addWeighted(absX, 0.5, absY, 0.5, 0)

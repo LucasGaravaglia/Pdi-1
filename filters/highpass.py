@@ -4,7 +4,7 @@ import numpy as np
 from filters.highpassBasic import highpassBasicCv
 
 
-def highpassCv(image, figure_size=3, sigma=1):
+def highpassCv(image, figure_size=3, sigma=1.0):
     """
     Aplica o filtro de passa alta de alto contraste na imagem.
     Parameters:
@@ -12,5 +12,6 @@ def highpassCv(image, figure_size=3, sigma=1):
     figure_size -> Tamanho da matriz.
     sigma -> Parametro de peso do filtro.
     """
+    sigma = sigma-1
     data = np.array(image, dtype=float)
     return (sigma*data)+highpassBasicCv(image, figure_size)

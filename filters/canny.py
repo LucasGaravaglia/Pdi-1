@@ -7,5 +7,4 @@ def cannyCv(image):
     Parameters:
     image -> imagem que recebera o filtro.
     """
-    imageBlur = cv2.GaussianBlur(image, (3, 3), 0)
-    return cv2.Canny(image=imageBlur, threshold1=100, threshold2=200)
+    return cv2.Canny(image=image, threshold1=100, threshold2=200)
